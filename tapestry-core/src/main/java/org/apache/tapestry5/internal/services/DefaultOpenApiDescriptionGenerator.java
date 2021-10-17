@@ -33,7 +33,9 @@ import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.RequestParameter;
 import org.apache.tapestry5.annotations.StaticActivationContextValue;
 import org.apache.tapestry5.commons.Messages;
+import org.apache.tapestry5.commons.util.CommonsUtils;
 import org.apache.tapestry5.http.services.BaseURLSource;
+import org.apache.tapestry5.http.services.Request;
 import org.apache.tapestry5.internal.InternalConstants;
 import org.apache.tapestry5.internal.structure.Page;
 import org.apache.tapestry5.ioc.services.SymbolSource;
@@ -78,6 +80,8 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
     
     final private PageRenderLinkSource pageRenderLinkSource;
     
+    final private Request request;
+    
     final private static String KEY_PREFIX = "openapi.";
     
     public DefaultOpenApiDescriptionGenerator(
@@ -87,7 +91,8 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
             final ThreadLocale threadLocale,
             final PageSource pageSource,
             final ComponentClassResolver componentClassResolver,
-            final PageRenderLinkSource pageRenderLinkSource) 
+            final PageRenderLinkSource pageRenderLinkSource,
+            final Request request) 
     {
         super();
         this.baseUrlSource = baseUrlSource;
@@ -97,6 +102,7 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
         this.pageSource = pageSource;
         this.componentClassResolver = componentClassResolver;
         this.pageRenderLinkSource = pageRenderLinkSource;
+        this.request = request;
         messages = new ThreadLocal<>();
         failedPageNames = new HashSet<>();
     }
@@ -135,8 +141,7 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
         generateInfo(documentation);
         
         JSONArray servers = new JSONArray();
-        servers.add(new JSONObject("url", baseUrlSource.getBaseURL(false)));
-        servers.add(new JSONObject("url", baseUrlSource.getBaseURL(true)));
+        servers.add(new JSONObject("url", baseUrlSource.getBaseURL(request.isSecure())));
         
         documentation.put("servers", servers);
         
@@ -241,7 +246,7 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
         {
             throw new RuntimeException(String.format(
                     "There are at least two different REST endpoints for path %s and HTTP method %s in class %s",
-                    uri, httpMethod, pageClass.getName()));
+                    uri, httpMethod.toUpperCase(), pageClass.getName()));
         }
         else
         {
@@ -279,8 +284,9 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
             }
             if (!parameterDescription.isEmpty())
             {
-                Optional<String> parameterName = getValue(method, uri, httpMethod, parameter, "name");
-                parameterDescription.put("name", parameterName.orElse(parameter.getName()));
+//                Optional<String> parameterName = getValue(method, uri, httpMethod, parameter, "name");
+//                parameterDescription.put("name", parameterName.orElse(parameter.getName()));
+                parameterDescription.put("name", getParameterName(parameter));
                 getValue(method, uri, httpMethod, parameter, "description")
                     .ifPresent((v) -> parameterDescription.put("description", v));
                 
@@ -294,10 +300,24 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
         }
     }
 
+    private String getParameterName(Parameter parameter) {
+        String name = null;
+        final RequestParameter requestParameter = parameter.getAnnotation(RequestParameter.class);
+        if (requestParameter != null && !CommonsUtils.isBlank(requestParameter.value()))
+        {
+            name = requestParameter.value();
+        }
+        if (CommonsUtils.isBlank(name))
+        {
+            name = parameter.getName();
+        }
+        return name;
+    }
+
     private void processResponses(Method method, final String uri, final String httpMethod, final JSONObject methodDescription) {
         JSONObject responses = new JSONObject();
         JSONObject defaultResponse = new JSONObject();
-        int statusCode = httpMethod.equals("post") ? 
+        int statusCode = httpMethod.equals("post") || httpMethod.equals("put") ? 
                 HttpServletResponse.SC_CREATED : HttpServletResponse.SC_OK;
         putIfNotEmpty(defaultResponse, "description", getValue(method, uri, httpMethod, statusCode));
         responses.put(String.valueOf(statusCode), defaultResponse);
@@ -471,7 +491,7 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
                 else
                 {
                     builder.append("{");
-                    builder.append(parameter.getName());
+                    builder.append(getParameterName(parameter));
                     builder.append("}");
                 }
             }

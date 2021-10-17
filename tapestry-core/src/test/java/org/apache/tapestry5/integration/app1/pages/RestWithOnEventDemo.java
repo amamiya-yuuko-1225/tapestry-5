@@ -72,5 +72,4 @@ public class RestWithOnEventDemo extends BaseRestDemoPage {
         return new TextStreamResponse("text/plain", parameter + " overridden!");
     }
 
-
 }

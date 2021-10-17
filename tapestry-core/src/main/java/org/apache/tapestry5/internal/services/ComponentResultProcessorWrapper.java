@@ -22,7 +22,7 @@ import org.apache.tapestry5.services.ComponentEventResultProcessor;
 /**
  * A wrapper around {@link ComponentEventResultProcessor} that encapsulates capturing the exception.
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class ComponentResultProcessorWrapper implements TrackableComponentEventCallback
 {
     private boolean aborted;

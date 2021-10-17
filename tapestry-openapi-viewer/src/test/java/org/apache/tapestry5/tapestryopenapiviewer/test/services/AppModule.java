@@ -11,7 +11,9 @@
 // limitations under the License.
 package org.apache.tapestry5.tapestryopenapiviewer.test.services;
 
+import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.commons.Configuration;
+import org.apache.tapestry5.commons.MappedConfiguration;
 import org.apache.tapestry5.services.LibraryMapping;
 
 public class AppModule
@@ -19,5 +21,11 @@ public class AppModule
     public static void contributeComponentClassResolver(Configuration<LibraryMapping> configuration)
     {
         configuration.add(new LibraryMapping("app1", "org.apache.tapestry5.integration.app1"));
+    }
+    
+    public static void contributeApplicationDefaults(MappedConfiguration<String, Object> configuration)
+    {
+        configuration.add(SymbolConstants.PUBLISH_OPENAPI_DEFINITON, true);
+        configuration.add(SymbolConstants.PRODUCTION_MODE, true);
     }
 }

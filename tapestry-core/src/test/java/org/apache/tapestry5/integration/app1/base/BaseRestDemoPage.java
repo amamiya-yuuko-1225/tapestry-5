@@ -16,6 +16,8 @@ import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.RequestParameter;
 import org.apache.tapestry5.annotations.StaticActivationContextValue;
 import org.apache.tapestry5.http.services.Response;
+import org.apache.tapestry5.json.JSONArray;
+import org.apache.tapestry5.json.JSONObject;
 import org.apache.tapestry5.util.TextStreamResponse;
 
 public class BaseRestDemoPage extends AbstractRestDemoPage {
@@ -39,19 +41,22 @@ public class BaseRestDemoPage extends AbstractRestDemoPage {
     }
     
     @OnEvent(EventConstants.HTTP_GET)
-    protected Object superclassEndpoint(@StaticActivationContextValue("superclassEndpoint") String pathParameter)
+    public Object superclassEndpoint(@StaticActivationContextValue("superclassEndpoint") String pathParameter)
     {
-        return new TextStreamResponse("text/plain", pathParameter);
+        final JSONArray jsonArray = new JSONArray();
+        jsonArray.add(pathParameter);
+        return jsonArray;
     }
     
     @OnEvent(EventConstants.HTTP_GET)
-    protected Object withParameters(
+    public Object withParameters(
             @StaticActivationContextValue("parametersTest") String staticParameter,
             @RequestParameter(value = "fromQueryString", allowBlank = true) String queryParameter,
             String pathParameter)
     {
-        return new TextStreamResponse("text/plain", 
-                String.join(":", staticParameter, pathParameter, queryParameter));
+        return new JSONObject("staticParameter", staticParameter, 
+                "pathParameter", pathParameter, 
+                "queryParameter", queryParameter);
     }
     
 }

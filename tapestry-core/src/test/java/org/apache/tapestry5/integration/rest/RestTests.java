@@ -49,7 +49,7 @@ public class RestTests extends App1TestCase
     
     final private static String ENDPOINT_URL = RestWithOnEventDemo.class.getSimpleName();
     
-    final private static String PATH_PARAMETER_VALUE = "nice";
+    final private static String PATH_PARAMETER_VALUE = RestWithOnEventDemo.class.getSimpleName();
     
     @Test
     public void on_event_http_get() throws IOException
@@ -67,6 +67,12 @@ public class RestTests extends App1TestCase
     public void on_event_http_put() throws IOException
     {
         test(EventConstants.HTTP_PUT, new HttpPut(getUrl()));
+    }
+
+    @Test
+    public void on_event_http_put_without_other_parameters() throws IOException
+    {
+        test(EventConstants.HTTP_PUT, new HttpPut(getBaseURL() + ENDPOINT_URL));
     }
 
     @Test
@@ -167,7 +173,7 @@ public class RestTests extends App1TestCase
     
     private void test(String eventName, HttpRequestBase method) throws ClientProtocolException, IOException
     {
-        String expectedResponse = eventName + ":" + PATH_PARAMETER_VALUE;;
+        String expectedResponse = eventName + ":" + PATH_PARAMETER_VALUE;
         if (method instanceof HttpEntityEnclosingRequest)
         {
             HttpEntityEnclosingRequest heer = (HttpEntityEnclosingRequest) method;

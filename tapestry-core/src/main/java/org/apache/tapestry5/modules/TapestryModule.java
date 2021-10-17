@@ -250,6 +250,7 @@ import org.apache.tapestry5.ioc.services.ThreadLocale;
 import org.apache.tapestry5.ioc.services.UpdateListener;
 import org.apache.tapestry5.ioc.services.UpdateListenerHub;
 import org.apache.tapestry5.json.JSONArray;
+import org.apache.tapestry5.json.JSONCollection;
 import org.apache.tapestry5.json.JSONObject;
 import org.apache.tapestry5.json.modules.JSONModule;
 import org.apache.tapestry5.plastic.MethodAdvice;
@@ -1615,6 +1616,9 @@ public final class TapestryModule
         configuration.addInstance(StreamResponse.class, StreamResponseResultProcessor.class);
 
         configuration.addInstance(StreamPageContent.class, StreamPageContentResultProcessor.class);
+        
+        configuration.addInstance(JSONArray.class, JSONCollectionEventResultProcessor.class);
+        configuration.addInstance(JSONObject.class, JSONCollectionEventResultProcessor.class);
     }
 
     /**
@@ -1652,7 +1656,7 @@ public final class TapestryModule
         configuration.addInstance(RenderCommand.class, RenderCommandComponentEventResultProcessor.class);
         configuration.addInstance(Component.class, AjaxComponentInstanceEventResultProcessor.class);
         configuration.addInstance(JSONObject.class, JSONObjectEventResultProcessor.class);
-        configuration.addInstance(JSONArray.class, JSONArrayEventResultProcessor.class);
+        configuration.addInstance(JSONArray.class, JSONCollectionEventResultProcessor.class);
         configuration.addInstance(StreamResponse.class, StreamResponseResultProcessor.class);
         configuration.addInstance(String.class, AjaxPageNameComponentEventResultProcessor.class);
         configuration.addInstance(Link.class, AjaxLinkComponentEventResultProcessor.class);
