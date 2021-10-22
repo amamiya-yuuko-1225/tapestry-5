@@ -20,10 +20,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
@@ -76,8 +74,6 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
     
     final private ComponentClassResolver componentClassResolver;
     
-    final private Set<String> failedPageNames;
-    
     final private PageRenderLinkSource pageRenderLinkSource;
     
     final private Request request;
@@ -104,7 +100,6 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
         this.pageRenderLinkSource = pageRenderLinkSource;
         this.request = request;
         messages = new ThreadLocal<>();
-        failedPageNames = new HashSet<>();
     }
 
     @Override
@@ -114,18 +109,18 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
         // Making sure all pages have been loaded and transformed
         for (String pageName : componentClassResolver.getPageNames())
         {
-            if (!failedPageNames.contains(pageName))
+            try
             {
-                try
-                {
-                    pageSource.getPage(pageName);
-                }
-                catch (Exception e)
-                {
-                    // Ignoring exception, since some classes may not
-                    // be instantiable.
-                    failedPageNames.add(pageName);
-                }
+                pageSource.getPage(pageName);
+            }
+            catch (Exception e)
+            {
+                // Ignoring exception, since some classes may not
+                // be instantiable.
+                LOGGER.warn(String.format(
+                        "Exception while intantiating page %s for OpenAPI description generation,", 
+                        pageName), e);
+                e.printStackTrace();
             }
         }
 
@@ -218,9 +213,13 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
         JSONArray methodsAsJson = new JSONArray();
         while (model != null)
         {
-            JSONArray thisMethodArray = new JSONArray(model.getMeta(
-                    InternalConstants.REST_ENDPOINT_EVENT_HANDLER_METHODS));
-            addElementsIfNotPresent(methodsAsJson, thisMethodArray);
+            final String meta = model.getMeta(
+                    InternalConstants.REST_ENDPOINT_EVENT_HANDLER_METHODS);
+            if (meta != null)
+            {
+                JSONArray thisMethodArray = new JSONArray(meta);
+                addElementsIfNotPresent(methodsAsJson, thisMethodArray);
+            }
             model = model.getParentModel();
         }
         return methodsAsJson;

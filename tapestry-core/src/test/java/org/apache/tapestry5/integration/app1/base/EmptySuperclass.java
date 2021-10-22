@@ -11,18 +11,13 @@
 // limitations under the License.
 package org.apache.tapestry5.integration.app1.base;
 
-import org.apache.tapestry5.EventConstants;
-import org.apache.tapestry5.annotations.OnEvent;
-import org.apache.tapestry5.annotations.StaticActivationContextValue;
-import org.apache.tapestry5.util.TextStreamResponse;
+import org.apache.tapestry5.internal.services.DefaultOpenApiDescriptionGenerator;
 
-public class AbstractRestDemoPage extends EmptySuperclass
+/**
+ * Just to make sure {@link DefaultOpenApiDescriptionGenerator} handles superclasses
+ * without any REST methods correctly (it didn't at first).
+ */
+public class EmptySuperclass 
 {
     
-    @OnEvent(EventConstants.HTTP_GET)
-    protected Object abstractSuperclassEndpoint(@StaticActivationContextValue("abstract") String abstractValue)
-    {
-        return new TextStreamResponse("text/plain", abstractValue);
-    }
-
 }
