@@ -12,6 +12,7 @@
 package org.apache.tapestry5.integration.app1.base;
 
 import org.apache.tapestry5.EventConstants;
+import org.apache.tapestry5.annotations.ActivationContextParameter;
 import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.RequestParameter;
 import org.apache.tapestry5.annotations.StaticActivationContextValue;
@@ -52,7 +53,7 @@ public class BaseRestDemoPage extends AbstractRestDemoPage {
     public Object withParameters(
             @StaticActivationContextValue("parametersTest") String staticParameter,
             @RequestParameter(value = "fromQueryString", allowBlank = true) String queryParameter,
-            String pathParameter)
+            @ActivationContextParameter("pathParameter") String pathParameter)
     {
         return new JSONObject("staticParameter", staticParameter, 
                 "pathParameter", pathParameter, 

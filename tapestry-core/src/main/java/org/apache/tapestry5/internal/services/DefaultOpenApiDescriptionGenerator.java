@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.tapestry5.SymbolConstants;
+import org.apache.tapestry5.annotations.ActivationContextParameter;
 import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.RequestParameter;
 import org.apache.tapestry5.annotations.StaticActivationContextValue;
@@ -306,6 +307,11 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
         {
             name = requestParameter.value();
         }
+        ActivationContextParameter activationContextParameter = parameter.getAnnotation(ActivationContextParameter.class);
+        if (activationContextParameter != null && !CommonsUtils.isBlank(activationContextParameter.value()))
+        {
+            name = activationContextParameter.value();
+        }
         if (CommonsUtils.isBlank(name))
         {
             name = parameter.getName();
@@ -372,7 +378,7 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
 
     public Optional<String> getValue(Method method, String path, String httpMethod, Parameter parameter, String property) 
     {
-        return getValue(method, path, httpMethod, "parameter." + parameter.getName(), property);
+        return getValue(method, path, httpMethod, "parameter." + getParameterName(parameter), property);
     }
     
     public Optional<String> getValue(Method method, String path, String httpMethod, int statusCode) 
