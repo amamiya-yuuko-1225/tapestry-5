@@ -36,12 +36,16 @@ public class OpenApiDescriptionDispatcher implements Dispatcher
     
     private final String path;
     private final OpenApiDescriptionGenerator openApiDescriptionGenerator;
+    private byte[] cachedDescription;
+    private final boolean productionMode;
     
     public OpenApiDescriptionDispatcher(@Symbol(SymbolConstants.OPENAPI_DESCRIPTION_PATH) final String path,
-            final OpenApiDescriptionGenerator openApiDescriptionGenerator)
+            final OpenApiDescriptionGenerator openApiDescriptionGenerator,
+            final @Symbol(SymbolConstants.PRODUCTION_MODE) boolean productionMode)
     {
         this.path = path;
         this.openApiDescriptionGenerator = openApiDescriptionGenerator;
+        this.productionMode = productionMode;
     }
     
     public boolean dispatch(Request request, Response response) throws IOException
@@ -49,14 +53,32 @@ public class OpenApiDescriptionDispatcher implements Dispatcher
         boolean dispatched = false;
         if (path.equals(request.getPath()))
         {
-            final byte[] definition = openApiDescriptionGenerator
-                    .generate(new JSONObject())
-                    .toCompactString()
-                    .getBytes(Charset.forName("UTF-8"));
-            response.setContentLength(definition.length);
-            response.getOutputStream("application/json").write(definition);
+            final byte[] description = getDescriptionAsByteArray();
+            response.setContentLength(description.length);
+            response.getOutputStream("application/json").write(description);
             dispatched = true;
         }
         return dispatched;
+    }
+
+    private byte[] getDescriptionAsByteArray() 
+    {
+        byte[] bytes;
+        if (productionMode && cachedDescription != null)
+        {
+            bytes = cachedDescription;
+        }
+        else
+        {
+            bytes = openApiDescriptionGenerator
+                    .generate(new JSONObject())
+                    .toCompactString()
+                    .getBytes(Charset.forName("UTF-8"));
+            if (productionMode)
+            {
+                cachedDescription = bytes;
+            }
+        }
+        return bytes;
     }
 }
