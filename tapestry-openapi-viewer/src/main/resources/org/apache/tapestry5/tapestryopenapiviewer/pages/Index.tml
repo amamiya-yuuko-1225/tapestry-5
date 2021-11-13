@@ -74,14 +74,14 @@
     <div class="swagger-ui">
 		<div class="wrapper">
 			<section class="">
-				<span class="float-right">
-					<a target="_blank" rel="noopener noreferrer"
-						href="https://validator.swagger.io/validator/debug?url=${escapedDefinitionUrl}">
-						<img
-							src="https://validator.swagger.io/validator?url=${escapedDefinitionUrl}"
-							alt="Online validator badge"/>
-					</a>
-				</span>
+<!-- 				<span class="float-right"> -->
+<!-- 					<a target="_blank" rel="noopener noreferrer" -->
+<!-- 						href="https://validator.swagger.io/validator/debug?url=${escapedDefinitionUrl}"> -->
+<!-- 						<img -->
+<!-- 							src="https://validator.swagger.io/validator?url=${escapedDefinitionUrl}" -->
+<!-- 							alt="Online validator badge"/> -->
+<!-- 					</a> -->
+<!-- 				</span> -->
 			</section>
 		</div>
 	</div>

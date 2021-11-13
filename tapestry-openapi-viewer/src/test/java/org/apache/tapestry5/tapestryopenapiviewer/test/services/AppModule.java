@@ -26,6 +26,6 @@ public class AppModule
     public static void contributeApplicationDefaults(MappedConfiguration<String, Object> configuration)
     {
         configuration.add(SymbolConstants.PUBLISH_OPENAPI_DEFINITON, true);
-        configuration.add(SymbolConstants.PRODUCTION_MODE, true);
+        configuration.add(SymbolConstants.PRODUCTION_MODE, false);
     }
 }
