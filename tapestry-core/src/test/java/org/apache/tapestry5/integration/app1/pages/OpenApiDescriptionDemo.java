@@ -12,7 +12,7 @@
 package org.apache.tapestry5.integration.app1.pages;
 
 import org.apache.tapestry5.ioc.annotations.Inject;
-import org.apache.tapestry5.services.OpenApiDescriptionGenerator;
+import org.apache.tapestry5.services.rest.OpenApiDescriptionGenerator;
 import org.apache.tapestry5.util.TextStreamResponse;
 
 public class OpenApiDescriptionDemo  {

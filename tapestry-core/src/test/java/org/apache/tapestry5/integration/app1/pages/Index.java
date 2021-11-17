@@ -62,9 +62,9 @@ public class Index
 
                     new Item("StaticActivationContextValueDemo", "@StaticActivationContextValue Demo", "Demonstrates the usage of @StaticActivationContextValue"),
                     
-                    new Item("RestWithOnEventDemo", "REST with @OnEvent Demo", "Demonstrates the usage of @OnEvent to handle REST requests"),                    
+                    new Item("rest/RestWithOnEventDemo", "REST with @OnEvent Demo", "Demonstrates the usage of @OnEvent to handle REST requests"),                    
                     
-                    new Item("RestWithEventHandlerMethodNameDemo", "REST with Event Handler Method Name Demo", "Demonstrates the usage of event handler method names to handle REST requests"),
+                    new Item("rest/RestWithEventHandlerMethodNameDemo", "REST with Event Handler Method Name Demo", "Demonstrates the usage of event handler method names to handle REST requests"),
 
                     new Item("Html5DateFieldDemo", "Html5DateField Demo", "Choosing dates using the native HTML5 date picker"),
 

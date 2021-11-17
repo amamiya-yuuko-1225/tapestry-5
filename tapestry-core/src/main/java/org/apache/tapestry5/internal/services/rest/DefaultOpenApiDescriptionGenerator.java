@@ -14,14 +14,17 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-package org.apache.tapestry5.internal.services;
+package org.apache.tapestry5.internal.services.rest;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
@@ -30,12 +33,14 @@ import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.annotations.ActivationContextParameter;
 import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.RequestParameter;
+import org.apache.tapestry5.annotations.RestInfo;
 import org.apache.tapestry5.annotations.StaticActivationContextValue;
 import org.apache.tapestry5.commons.Messages;
 import org.apache.tapestry5.commons.util.CommonsUtils;
 import org.apache.tapestry5.http.services.BaseURLSource;
 import org.apache.tapestry5.http.services.Request;
 import org.apache.tapestry5.internal.InternalConstants;
+import org.apache.tapestry5.internal.services.PageSource;
 import org.apache.tapestry5.internal.structure.Page;
 import org.apache.tapestry5.ioc.services.SymbolSource;
 import org.apache.tapestry5.ioc.services.ThreadLocale;
@@ -44,9 +49,11 @@ import org.apache.tapestry5.json.JSONObject;
 import org.apache.tapestry5.model.ComponentModel;
 import org.apache.tapestry5.runtime.Component;
 import org.apache.tapestry5.services.ComponentClassResolver;
-import org.apache.tapestry5.services.OpenApiDescriptionGenerator;
 import org.apache.tapestry5.services.PageRenderLinkSource;
 import org.apache.tapestry5.services.messages.ComponentMessagesSource;
+import org.apache.tapestry5.services.rest.MappedEntityManager;
+import org.apache.tapestry5.services.rest.OpenApiDescriptionGenerator;
+import org.apache.tapestry5.services.rest.OpenApiTypeDescriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +67,8 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
 {
     
     final private static Logger LOGGER = LoggerFactory.getLogger(DefaultOpenApiDescriptionGenerator.class);
+    
+    final private OpenApiTypeDescriber typeDescriber;
     
     final private BaseURLSource baseUrlSource;
     
@@ -79,9 +88,17 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
     
     final private Request request;
     
+    final Set<Class<?>> entities;
+    
     final private static String KEY_PREFIX = "openapi.";
     
+    final private String basePath;
+    
+    private final Map<String, Class<?>> stringToClassMap = new HashMap<>();
+    
     public DefaultOpenApiDescriptionGenerator(
+            final OpenApiTypeDescriber typeDescriber,
+            final MappedEntityManager mappedEntityManager,
             final BaseURLSource baseUrlSource, 
             final SymbolSource symbolSource, 
             final ComponentMessagesSource componentMessagesSource,
@@ -92,6 +109,8 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
             final Request request) 
     {
         super();
+        
+        this.typeDescriber = typeDescriber;
         this.baseUrlSource = baseUrlSource;
         this.symbolSource = symbolSource;
         this.componentMessagesSource = componentMessagesSource;
@@ -100,7 +119,33 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
         this.componentClassResolver = componentClassResolver;
         this.pageRenderLinkSource = pageRenderLinkSource;
         this.request = request;
+        entities = mappedEntityManager.getEntities();
+        
         messages = new ThreadLocal<>();
+        basePath = symbolSource.valueForSymbol(SymbolConstants.OPENAPI_BASE_PATH);
+        
+        if (!basePath.startsWith("/") || !basePath.endsWith("/"))
+        {
+            throw new RuntimeException(String.format(
+                    "The value of the %s (%s) configuration symbol is '%s' is invalid. "
+                    + "It should start with a slash and not end with one", 
+                        SymbolConstants.OPENAPI_BASE_PATH, 
+                        "SymbolConstants.OPENAPI_BASE_PATH", basePath));
+        }
+        
+        stringToClassMap.put("boolean", boolean.class);
+        stringToClassMap.put("byte", byte.class);
+        stringToClassMap.put("short", short.class);
+        stringToClassMap.put("int", int.class);
+        stringToClassMap.put("long", long.class);
+        stringToClassMap.put("float", float.class);
+        stringToClassMap.put("double", double.class);
+        stringToClassMap.put("char", char.class);
+        
+        for (Class<?> entity : entities) {
+            stringToClassMap.put(entity.getName(), entity);
+        }
+        
     }
 
     @Override
@@ -137,7 +182,8 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
         generateInfo(documentation);
         
         JSONArray servers = new JSONArray();
-        servers.add(new JSONObject("url", baseUrlSource.getBaseURL(request.isSecure())));
+        servers.add(new JSONObject("url", baseUrlSource.getBaseURL(request.isSecure()) + 
+                basePath.substring(0, basePath.length() - 1))); // removing the last slash
         
         documentation.put("servers", servers);
         
@@ -149,6 +195,8 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
         {
             throw new RuntimeException(e);
         }
+        
+        generateSchemas(documentation);
         
         return documentation;
         
@@ -289,6 +337,7 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
                 parameterDescription.put("name", getParameterName(parameter));
                 getValue(method, uri, httpMethod, parameter, "description")
                     .ifPresent((v) -> parameterDescription.put("description", v));
+                typeDescriber.describe(parameterDescription, parameter);
                 
                 parametersAsJsonArray.add(parameterDescription);
             }
@@ -327,9 +376,42 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
         putIfNotEmpty(defaultResponse, "description", getValue(method, uri, httpMethod, statusCode));
         responses.put(String.valueOf(statusCode), defaultResponse);
 
+        String[] produces = getProducedMediaTypes(method);
+        if (produces != null && produces.length > 0)
+        {
+            JSONObject contentDescription = new JSONObject();
+            for (String mediaType : produces)
+            {
+                JSONObject responseTypeDescription = new JSONObject();
+                typeDescriber.describeReturnType(responseTypeDescription, method);
+                contentDescription.put(mediaType, responseTypeDescription);
+            }
+            defaultResponse.put("content", contentDescription);
+        }
+
         methodDescription.put("responses", responses);
     }
     
+    private String[] getProducedMediaTypes(Method method) {
+        
+        String[] produces = CommonsUtils.EMPTY_STRING_ARRAY;
+        RestInfo restInfo = method.getAnnotation(RestInfo.class);
+        if (isNonEmptyConsumes(restInfo))
+        {
+            produces = restInfo.produces();
+        }
+        else
+        {
+            restInfo = method.getDeclaringClass().getAnnotation(RestInfo.class);
+            if (isNonEmptyConsumes(restInfo))
+            {
+                produces = restInfo.produces();
+            }
+        }
+        
+        return produces;
+    }
+
     private void addElementsIfNotPresent(JSONArray accumulator, JSONArray array) 
     {
         if (array != null)
@@ -344,6 +426,11 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
                 }
             }
         }
+    }
+    
+    private boolean isNonEmptyConsumes(RestInfo restInfo)
+    {
+        return restInfo != null && !(restInfo.produces().length == 1 && "".equals(restInfo.produces()[0]));
     }
 
     private boolean isPresent(JSONArray array, JSONObject object) 
@@ -370,10 +457,10 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
         }
         return value;
     }
-    
+
     private Optional<String> getValue(Method method, String path, String httpMethod, String property) 
     {
-        return getValue(method, path + "." + httpMethod + "." + property, true);
+        return getValue(method, path + "." + httpMethod + "." + property, false);
     }
 
     public Optional<String> getValue(Method method, String path, String httpMethod, Parameter parameter, String property) 
@@ -460,23 +547,64 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
             superTypes.addAll((Arrays.asList(pageClass.getInterfaces())));
             for (Class clazz : superTypes)
             {
-                method = findMethod(clazz, name, parameterTypes);
-                if (method != null)
+                if (clazz != null && !clazz.equals(Object.class))
                 {
-                    break;
+                    method = findMethod(clazz, name, parameterTypes);
+                    if (method != null)
+                    {
+                        break;
+                    }
                 }
             }
         }
+        if (method == null && pageClass.getName().equals("org.apache.tapestry5.integration.app1.pages.rest.RestTypeDescriptionsDemo"))
+        {
+            System.out.println("WTF!");
+        }
+        // In case of the same class being loaded from different classloaders,
+        // let's try to find the method in a different way.
+//        if (method == null)
+//        {
+//            for (Method m : pageClass.getDeclaredMethods())
+//            {
+//                if (name.equals(m.getName()) && parameterTypes.size() == m.getParameterCount())
+//                {
+//                    boolean matches = true;
+//                    for (int i = 0; i < parameterTypes.size(); i++)
+//                    {
+//                        if (!(parameterTypes.get(i)).getName().equals(
+//                                m.getParameterTypes()[i].getName()))
+//                        {
+//                            matches = false;
+//                            break;
+//                        }
+//                    }
+//                    if (matches)
+//                    {
+//                        method = m;
+//                        break;
+//                    }
+//                }
+//            }
+//        }
         return method;
     }
     
-    private static Class<?> toClass(String string)
+    private Class<?> toClass(String string)
     {
-        try {
-            return Class.forName(string);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+        Class<?> clasz = stringToClassMap.get(string);
+        if (clasz == null)
+        {
+            try 
+            {
+                clasz = Thread.currentThread().getContextClassLoader().loadClass(string);
+            } catch (ClassNotFoundException e) 
+            {
+                throw new RuntimeException(e);
+            }
+            stringToClassMap.put(string, clasz);
         }
+        return clasz;
     }
 
     private String getPath(Method method, Class<?> pageClass)
@@ -501,7 +629,19 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
                 }
             }
         }
-        return builder.toString();
+        String path = builder.toString();
+        if (!path.startsWith(basePath))
+        {
+            throw new RuntimeException(String.format("Method %s has path %s, which "
+                    + "doesn't start with base path %s. It's likely you need to adjust the "
+                    + "base path and/or the endpoint paths",
+                    method, path, basePath));
+        }
+        else
+        {
+            path = path.substring(basePath.length() - 1); // keep the slash
+        }
+        return path;
     }
     
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -605,6 +745,25 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
         final ComponentModel componentModel = component.getComponentResources().getComponentModel();
         return InternalConstants.TRUE.equals(componentModel.getMeta(
                 InternalConstants.REST_ENDPOINT_EVENT_HANDLER_METHOD_PRESENT));
+    }
+    
+    private void generateSchemas(JSONObject documentation) 
+    {
+        if (!entities.isEmpty())
+        {
+        
+            JSONObject components = new JSONObject();
+            JSONObject schemas = new JSONObject();
+        
+            for (Class<?> entity : entities) {
+                typeDescriber.describeSchema(entity, schemas);
+            }
+            
+            components.put("schemas", schemas);
+            documentation.put("components", components);
+            
+        }
+        
     }
 
 }

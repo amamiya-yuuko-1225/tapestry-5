@@ -15,9 +15,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package org.apache.tapestry5.services;
+package org.apache.tapestry5.services.rest;
 
-import org.apache.tapestry5.internal.services.DefaultOpenApiDescriptionGenerator;
+import org.apache.tapestry5.internal.services.rest.DefaultOpenApiDescriptionGenerator;
 import org.apache.tapestry5.ioc.annotations.UsesOrderedConfiguration;
 import org.apache.tapestry5.json.JSONObject;
 

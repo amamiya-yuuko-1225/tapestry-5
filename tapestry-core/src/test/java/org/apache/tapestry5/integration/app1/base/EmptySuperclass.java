@@ -11,7 +11,7 @@
 // limitations under the License.
 package org.apache.tapestry5.integration.app1.base;
 
-import org.apache.tapestry5.internal.services.DefaultOpenApiDescriptionGenerator;
+import org.apache.tapestry5.internal.services.rest.DefaultOpenApiDescriptionGenerator;
 
 /**
  * Just to make sure {@link DefaultOpenApiDescriptionGenerator} handles superclasses

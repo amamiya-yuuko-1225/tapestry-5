@@ -11,14 +11,18 @@
 // limitations under the License.
 package org.apache.tapestry5.integration.app1.base;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.tapestry5.EventConstants;
 import org.apache.tapestry5.annotations.ActivationContextParameter;
 import org.apache.tapestry5.annotations.OnEvent;
+import org.apache.tapestry5.annotations.RequestBody;
 import org.apache.tapestry5.annotations.RequestParameter;
 import org.apache.tapestry5.annotations.StaticActivationContextValue;
 import org.apache.tapestry5.http.services.Response;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
+import org.apache.tapestry5.services.HttpStatus;
 import org.apache.tapestry5.util.TextStreamResponse;
 
 public class BaseRestDemoPage extends AbstractRestDemoPage {
@@ -58,6 +62,24 @@ public class BaseRestDemoPage extends AbstractRestDemoPage {
         return new JSONObject("staticParameter", staticParameter, 
                 "pathParameter", pathParameter, 
                 "queryParameter", queryParameter);
+    }
+    
+    @OnEvent(EventConstants.HTTP_PUT)
+    public Object returningHttpStatus(
+            @StaticActivationContextValue("returningHttpStatus") String ignored,
+            @RequestBody String parameter)
+    {
+        return new HttpStatus(HttpServletResponse.SC_CREATED, parameter)
+                .withContentLocation(parameter + ".txt")
+                .withHttpHeader("ETag", parameter + ".etag");
+    }
+    
+    @OnEvent(EventConstants.HTTP_PUT)
+    public Object returningHttpStatusSimple(
+            @StaticActivationContextValue("returningHttpStatusSimple") String ignored,
+            @RequestBody String parameter)
+    {
+        return new HttpStatus(HttpServletResponse.SC_CREATED);
     }
     
 }

@@ -20,15 +20,16 @@ import org.apache.tapestry5.corelib.components.BeanEditor;
 import org.apache.tapestry5.corelib.components.Errors;
 import org.apache.tapestry5.corelib.mixins.FormGroup;
 import org.apache.tapestry5.http.TapestryHttpSymbolConstants;
+import org.apache.tapestry5.http.services.BaseURLSource;
 import org.apache.tapestry5.internal.services.AssetDispatcher;
-import org.apache.tapestry5.internal.services.DefaultOpenApiDescriptionGenerator;
+import org.apache.tapestry5.internal.services.rest.DefaultOpenApiDescriptionGenerator;
 import org.apache.tapestry5.modules.NoBootstrapModule;
 import org.apache.tapestry5.services.Html5Support;
-import org.apache.tapestry5.services.OpenApiDescriptionGenerator;
 import org.apache.tapestry5.services.assets.AssetPathConstructor;
 import org.apache.tapestry5.services.assets.ResourceMinimizer;
 import org.apache.tapestry5.services.compatibility.Trait;
 import org.apache.tapestry5.services.javascript.JavaScriptStack;
+import org.apache.tapestry5.services.rest.OpenApiDescriptionGenerator;
 
 /**
  * Defines the names of symbols used to configure Tapestry.
@@ -700,5 +701,15 @@ public class SymbolConstants
      * @since 5.8.0
      */
     public static final String OPENAPI_DESCRIPTION_PATH = "tapestry.openapi-description-path";
+    
+    /**
+     * Defines a base path to the generated OpenAPI description relative to the application
+     * URL as defined by {@link BaseURLSource#getBaseURL(boolean)}. It should be either
+     * the empty string, meaning there's no base path, or a string starting and ending 
+     * with a slash. Default value is "/" (without the quotes)
+     * @see OpenApiDescriptionGenerator
+     * @since 5.8.0
+     */
+    public static final String OPENAPI_BASE_PATH = "tapestry.openapi-base-path";
 
 }

@@ -23,7 +23,7 @@ import org.apache.tapestry5.http.services.Request;
 import org.apache.tapestry5.http.services.Response;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.json.JSONObject;
-import org.apache.tapestry5.services.OpenApiDescriptionGenerator;
+import org.apache.tapestry5.services.rest.OpenApiDescriptionGenerator;
 
 /**
  * Recognizes requests where the path matches the value of {@link SymbolConstants#OPENAPI_DESCRIPTION_PATH}

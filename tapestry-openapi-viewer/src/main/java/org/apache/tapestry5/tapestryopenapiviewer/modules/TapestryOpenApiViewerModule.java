@@ -15,7 +15,10 @@
 package org.apache.tapestry5.tapestryopenapiviewer.modules;
 
 import org.apache.tapestry5.commons.Configuration;
+import org.apache.tapestry5.integration.app1.services.AppModule;
+import org.apache.tapestry5.ioc.annotations.Contribute;
 import org.apache.tapestry5.services.LibraryMapping;
+import org.apache.tapestry5.services.rest.MappedEntityManager;
 
 /**
  * Defines services and definitions for the Tapestry OpenAPI viewer.
@@ -25,5 +28,11 @@ public class TapestryOpenApiViewerModule
     public static void contributeComponentClassResolver(Configuration<LibraryMapping> configuration)
     {
         configuration.add(new LibraryMapping("openapiviewer", "org.apache.tapestry5.tapestryopenapiviewer"));
+    }
+    
+    @Contribute(MappedEntityManager.class)
+    public static void provideMappedEntities(Configuration<String> configuration)
+    {
+        AppModule.provideMappedEntities(configuration);
     }
 }
