@@ -14,7 +14,9 @@ package org.apache.tapestry5.tapestryopenapiviewer.test.services;
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.commons.Configuration;
 import org.apache.tapestry5.commons.MappedConfiguration;
+import org.apache.tapestry5.ioc.annotations.Contribute;
 import org.apache.tapestry5.services.LibraryMapping;
+import org.apache.tapestry5.services.rest.MappedEntityManager;
 
 public class AppModule
 {
@@ -28,4 +30,11 @@ public class AppModule
         configuration.add(SymbolConstants.PUBLISH_OPENAPI_DEFINITON, true);
         configuration.add(SymbolConstants.PRODUCTION_MODE, false);
     }
+    
+    @Contribute(MappedEntityManager.class)
+    public static void provideMappedEntities(Configuration<String> configuration)
+    {
+        org.apache.tapestry5.integration.app1.services.AppModule.provideMappedEntities(configuration);
+    }
+    
 }
