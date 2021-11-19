@@ -32,7 +32,7 @@
       }
       pre.version
       {
-        color: black !important;
+        background-color: inherit;
       }
       .swagger-ui-attribution
       {
@@ -82,11 +82,11 @@
 <!-- 							alt="Online validator badge"/> -->
 <!-- 					</a> -->
 <!-- 				</span> -->
+              <p class="swagger-ui-attribution">
+                This OpenAPI definition viewer is based on <a href="https://swagger.io/tools/swagger-ui/">Swagger UI</a>.
+              </p>
 			</section>
 		</div>
 	</div>
-  <p class="swagger-ui-attribution">
-    This OpenAPI definition viewer is based on <a href="https://swagger.io/tools/swagger-ui/">Swagger UI</a>.
-  </p>
   </body>
 </html>

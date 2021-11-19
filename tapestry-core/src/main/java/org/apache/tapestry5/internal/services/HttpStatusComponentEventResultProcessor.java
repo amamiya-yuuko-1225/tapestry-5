@@ -45,10 +45,10 @@ public class HttpStatusComponentEventResultProcessor implements ComponentEventRe
             final String headerValue = extraHttpHeaders.get(header);
             response.setHeader(header, headerValue);
         }
-        if (value.getMessage() != null)
+        if (value.getResponseBody() != null)
         {
             Objects.requireNonNull(value.getContentType(), "HttpStatus.mimeType cannot be null");
-            response.getPrintWriter(value.getContentType()).append(value.getMessage()).close();
+            response.getPrintWriter(value.getContentType()).append(value.getResponseBody()).close();
         }
     }
 }
