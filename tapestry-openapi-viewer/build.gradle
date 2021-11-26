@@ -7,6 +7,6 @@ dependencies {
 
 jar {
     manifest {
-        attributes 'Tapestry-Module-Classes': 'org.apache.tapestry5.tapestryopenapiviewer.modules.TapestryOpenApiViewerModule'
+        attributes 'Tapestry-Module-Classes': 'org.apache.tapestry5.openapiviewer.modules.TapestryOpenApiViewerModule'
     }
 }

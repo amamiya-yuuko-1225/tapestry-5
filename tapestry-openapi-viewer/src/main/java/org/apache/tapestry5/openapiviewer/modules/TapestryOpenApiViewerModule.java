@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.apache.tapestry5.tapestryopenapiviewer.modules;
+package org.apache.tapestry5.openapiviewer.modules;
 
 import org.apache.tapestry5.commons.Configuration;
 import org.apache.tapestry5.services.LibraryMapping;
@@ -24,7 +24,7 @@ public class TapestryOpenApiViewerModule
 {
     public static void contributeComponentClassResolver(Configuration<LibraryMapping> configuration)
     {
-        configuration.add(new LibraryMapping("openapiviewer", "org.apache.tapestry5.tapestryopenapiviewer"));
+        configuration.add(new LibraryMapping("openapiviewer", "org.apache.tapestry5.openapiviewer"));
     }
     
 }
