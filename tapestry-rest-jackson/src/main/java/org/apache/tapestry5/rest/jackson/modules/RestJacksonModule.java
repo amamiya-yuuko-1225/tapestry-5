@@ -119,7 +119,7 @@ public class RestJacksonModule
     }
     
     /**
-     * Contributes {@link JacksonOpenApiType} to the {@link OpenApiTypeDescriber} service
+     * Contributes {@link JacksonOpenApiTypeDescriber} to the {@link OpenApiTypeDescriber} service
      * to generate J.
      */
     public static void contributeOpenApiTypeDescriber(OrderedConfiguration<OpenApiTypeDescriber> configuration)

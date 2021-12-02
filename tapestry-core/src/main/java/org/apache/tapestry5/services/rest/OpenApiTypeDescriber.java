@@ -33,15 +33,15 @@ public interface OpenApiTypeDescriber
 
     /**
      * Describes a REST event handler method parameter.
-     * @param descriptiona {@link JSONObject} containing the description of an event handler parameter.
+     * @param description {@link JSONObject} containing the description of an event handler parameter.
      * @param parameter the event handler method parameter.
      */
     void describe(final JSONObject description, Parameter parameter);
     
     /**
      * Describes a REST event handler method return type.
-     * @param descriptiona {@link JSONObject} containing the description of a path response.
-     * @param parameter the event handler method itself.
+     * @param description {@link JSONObject} containing the description of a path response.
+     * @param method the event handler method itself.
      */
     void describeReturnType(final JSONObject description, Method method);
 

@@ -140,7 +140,7 @@ public final class HttpStatus
     
     /**
      * Creates an instance with status code <code>301 Moved Permanently</code>.
-     * @param location the value of the <code>Location</code> header.
+     * @param link the value of the <code>Location</code> header.
      */
     public static HttpStatus movedPermanently(Link link)
     {
