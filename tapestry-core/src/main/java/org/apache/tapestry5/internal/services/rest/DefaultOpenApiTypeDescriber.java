@@ -97,7 +97,7 @@ public class DefaultOpenApiTypeDescriber implements OpenApiTypeDescriber
         final RestInfo restInfo = method.getAnnotation(RestInfo.class);
         if (restInfo != null)
         {
-            returnedType = restInfo.returnedType();
+            returnedType = restInfo.returnType();
         }
         else 
         {

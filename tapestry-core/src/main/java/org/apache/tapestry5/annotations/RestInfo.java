@@ -28,7 +28,7 @@ import org.apache.tapestry5.services.rest.OpenApiTypeDescriber;
 /**
  * Annotation that provides some information about REST event handler methods for OpenAPI 
  * description generation. It can be used in methods and also in pages to define defaults
- * used by all methods without the annotation, except for {{@link #returnedType()}.
+ * used by all methods without the annotation, except for {{@link #returnType()}.
  * 
  * @see OpenApiDescriptionGenerator
  * @see OpenApiTypeDescriber
@@ -51,10 +51,10 @@ public @interface RestInfo
     String[] produces() default "";
 
     /**
-     * Defines the returned type of this REST event handler method in successful requests.
+     * Defines the return type of this REST event handler method in successful requests.
      * This is particularly useful for methods that have Object return type because
      * they may return non-response objects for error reasons, such as {@link HttpError}.
      */
-    Class<?> returnedType() default Object.class;
+    Class<?> returnType() default Object.class;
     
 }

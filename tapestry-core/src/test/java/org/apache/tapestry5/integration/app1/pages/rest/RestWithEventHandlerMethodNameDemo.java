@@ -12,8 +12,8 @@
 package org.apache.tapestry5.integration.app1.pages.rest;
 
 import org.apache.tapestry5.EventConstants;
-import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.RequestBody;
+import org.apache.tapestry5.annotations.RestInfo;
 import org.apache.tapestry5.annotations.StaticActivationContextValue;
 import org.apache.tapestry5.integration.app1.base.BaseRestDemoPage;
 
@@ -34,6 +34,7 @@ public class RestWithEventHandlerMethodNameDemo extends BaseRestDemoPage {
         return createResponse(EventConstants.HTTP_HEAD, null, parameter);
     }
 
+    @RestInfo(consumes = "text/plain")
     Object onHttpPatch(
             @StaticActivationContextValue(SUBPATH) String subpath, 
             String parameter, 
@@ -42,6 +43,7 @@ public class RestWithEventHandlerMethodNameDemo extends BaseRestDemoPage {
         return createResponse(EventConstants.HTTP_PATCH, body, parameter);
     }
 
+    @RestInfo(consumes = "text/plain")
     Object onHttpPost(
             @StaticActivationContextValue(SUBPATH) String subpath, 
             String parameter, 
@@ -50,7 +52,7 @@ public class RestWithEventHandlerMethodNameDemo extends BaseRestDemoPage {
         return createResponse(EventConstants.HTTP_POST, body, parameter);
     }
 
-    @OnEvent(EventConstants.HTTP_PUT)
+    @RestInfo(consumes = "text/plain")
     Object onHttpPut(
             @StaticActivationContextValue(SUBPATH) String subpath, 
             String parameter, 

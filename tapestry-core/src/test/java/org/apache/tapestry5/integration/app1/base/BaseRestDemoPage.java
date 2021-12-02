@@ -18,6 +18,7 @@ import org.apache.tapestry5.annotations.ActivationContextParameter;
 import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.RequestBody;
 import org.apache.tapestry5.annotations.RequestParameter;
+import org.apache.tapestry5.annotations.RestInfo;
 import org.apache.tapestry5.annotations.StaticActivationContextValue;
 import org.apache.tapestry5.http.services.Response;
 import org.apache.tapestry5.json.JSONArray;
@@ -65,6 +66,7 @@ public class BaseRestDemoPage extends AbstractRestDemoPage {
     }
     
     @OnEvent(EventConstants.HTTP_PUT)
+    @RestInfo(produces = "text/plain")
     public Object returningHttpStatus(
             @StaticActivationContextValue("returningHttpStatus") String ignored,
             @RequestBody String parameter)
@@ -75,6 +77,7 @@ public class BaseRestDemoPage extends AbstractRestDemoPage {
     }
     
     @OnEvent(EventConstants.HTTP_PUT)
+    @RestInfo(consumes = "text/plain")
     public Object returningHttpStatusSimple(
             @StaticActivationContextValue("returningHttpStatusSimple") String ignored,
             @RequestBody String parameter)

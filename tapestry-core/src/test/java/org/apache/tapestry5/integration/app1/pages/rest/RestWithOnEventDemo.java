@@ -14,6 +14,7 @@ package org.apache.tapestry5.integration.app1.pages.rest;
 import org.apache.tapestry5.EventConstants;
 import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.RequestBody;
+import org.apache.tapestry5.annotations.RestInfo;
 import org.apache.tapestry5.annotations.StaticActivationContextValue;
 import org.apache.tapestry5.integration.app1.base.BaseRestDemoPage;
 import org.apache.tapestry5.util.TextStreamResponse;
@@ -39,6 +40,7 @@ public class RestWithOnEventDemo extends BaseRestDemoPage {
     }
 
     @OnEvent(EventConstants.HTTP_PATCH)
+    @RestInfo(consumes = "application/javascript")
     Object patch(
             @StaticActivationContextValue(SUBPATH) String subpath, 
             String parameter, 
@@ -48,6 +50,7 @@ public class RestWithOnEventDemo extends BaseRestDemoPage {
     }
 
     @OnEvent(EventConstants.HTTP_POST)
+    @RestInfo(consumes = "application/javascript")
     Object post(
             @StaticActivationContextValue(SUBPATH) String subpath, 
             String parameter, 
@@ -57,6 +60,7 @@ public class RestWithOnEventDemo extends BaseRestDemoPage {
     }
 
     @OnEvent(EventConstants.HTTP_PUT)
+    @RestInfo(consumes = "application/javascript")
     Object put(
             @StaticActivationContextValue(SUBPATH) String subpath, 
             String parameter, 

@@ -26,6 +26,7 @@ import org.apache.tapestry5.rest.jackson.test.rest.entities.Attribute;
 import org.apache.tapestry5.rest.jackson.test.rest.entities.User;
 import org.apache.tapestry5.services.HttpStatus;
 import org.apache.tapestry5.services.PageRenderLinkSource;
+import org.apache.tapestry5.util.TextStreamResponse;
 
 public class Index 
 {
@@ -34,7 +35,7 @@ public class Index
     
     @Inject private PageRenderLinkSource pageRenderLinkSource;
     
-    @RestInfo(returnedType = User.class)
+    @RestInfo(returnType = User.class, produces = "application/json")
     @OnEvent(EventConstants.HTTP_GET)
     public Object getUserByEmail(String email)
     {
@@ -42,6 +43,14 @@ public class Index
         return user.isPresent() ? user.get() : HttpStatus.notFound();
     }
     
+    @RestInfo(returnType = int.class, produces = "text/plain")
+    @OnEvent(EventConstants.HTTP_GET)
+    public Object getUserCount(@StaticActivationContextValue("count") String ignored)
+    {
+        return new TextStreamResponse("UTF-8", String.valueOf(USERS.size()));
+    }
+    
+    @RestInfo(consumes = "application/json")
     public Object onHttpPut(@RequestBody User user) throws UnsupportedEncodingException
     {
         HttpStatus status;
@@ -58,6 +67,7 @@ public class Index
                 pageRenderLinkSource.createPageRenderLinkWithContext(Index.class, user.getEmail()));
     }
     
+    @RestInfo(returnType = User.class, produces = "application/json")
     @OnEvent(EventConstants.HTTP_GET)
     public User getExample(@StaticActivationContextValue("example") String example)
     {

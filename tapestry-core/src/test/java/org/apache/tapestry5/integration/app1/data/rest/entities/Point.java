@@ -6,8 +6,6 @@ public class Point {
 
     private int y;
     
-    private Point nextPoint;
-
     public int getX() {
         return x;
     }
@@ -24,12 +22,4 @@ public class Point {
         this.y = y;
     }
     
-    public Point getNextPoint() {
-        return nextPoint;
-    }
-
-    public void setNextPoint(Point nextPoint) {
-        this.nextPoint = nextPoint;
-    }
-
 }

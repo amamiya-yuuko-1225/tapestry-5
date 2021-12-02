@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.annotations.ActivationContextParameter;
 import org.apache.tapestry5.annotations.OnEvent;
+import org.apache.tapestry5.annotations.RequestBody;
 import org.apache.tapestry5.annotations.RequestParameter;
 import org.apache.tapestry5.annotations.RestInfo;
 import org.apache.tapestry5.annotations.StaticActivationContextValue;
@@ -322,13 +323,17 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
         {
             final JSONObject parameterDescription = new JSONObject();
             if (!isIgnored(parameter) && 
-                    parameter.getAnnotation(StaticActivationContextValue.class) == null)
+                    !parameter.isAnnotationPresent(StaticActivationContextValue.class))
             {
                 parameterDescription.put("in", "path");
             }
-            else if (parameter.getAnnotation(RequestParameter.class) != null)
+            else if (parameter.isAnnotationPresent(RequestParameter.class))
             {
                 parameterDescription.put("in", "query");
+            }
+            else if (parameter.isAnnotationPresent(RequestBody.class))
+            {
+                processRequestBody(method, uri, httpMethod, methodDescription, parametersAsJsonArray, parameter);
             }
             if (!parameterDescription.isEmpty())
             {
@@ -347,6 +352,34 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
         {
             methodDescription.put("parameters", parametersAsJsonArray);
         }
+    }
+
+    private void processRequestBody(Method method,
+            final String uri,
+            final String httpMethod,
+            final JSONObject methodDescription,
+            JSONArray parametersAsJsonArray,
+            Parameter parameter) {
+        JSONObject requestBodyDescription = new JSONObject();
+        requestBodyDescription.put("required", 
+                !(parameter.getAnnotation(RequestBody.class).allowEmpty()));
+        getValue(method, uri, httpMethod, "requestbody.description")
+            .ifPresent((v) -> requestBodyDescription.put("description", v));
+        
+        RestInfo restInfo = method.getAnnotation(RestInfo.class);
+        if (restInfo != null)
+        {
+            JSONObject contentDescription = new JSONObject();
+            for (String contentType : restInfo.consumes()) 
+            {
+                JSONObject schemaDescription = new JSONObject();
+                typeDescriber.describe(schemaDescription, parameter);
+                schemaDescription.remove("required");
+                contentDescription.put(contentType, schemaDescription);
+            }
+            requestBodyDescription.put("content", contentDescription);
+        }
+        methodDescription.put("requestBody", requestBodyDescription);
     }
 
     private String getParameterName(Parameter parameter) {
@@ -403,7 +436,7 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
         else
         {
             restInfo = method.getDeclaringClass().getAnnotation(RestInfo.class);
-            if (isNonEmptyConsumes(restInfo))
+            if (isNonEmptyProduces(restInfo))
             {
                 produces = restInfo.produces();
             }
@@ -429,6 +462,11 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
     }
     
     private boolean isNonEmptyConsumes(RestInfo restInfo)
+    {
+        return restInfo != null && !(restInfo.produces().length == 1 && "".equals(restInfo.produces()[0]));
+    }
+    
+    private boolean isNonEmptyProduces(RestInfo restInfo)
     {
         return restInfo != null && !(restInfo.produces().length == 1 && "".equals(restInfo.produces()[0]));
     }

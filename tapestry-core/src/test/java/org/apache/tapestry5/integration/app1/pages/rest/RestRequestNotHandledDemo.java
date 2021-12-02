@@ -12,10 +12,12 @@
 package org.apache.tapestry5.integration.app1.pages.rest;
 
 import org.apache.tapestry5.EventConstants;
+import org.apache.tapestry5.annotations.RestInfo;
 import org.apache.tapestry5.integration.app1.base.BaseRestDemoPage;
 
 public class RestRequestNotHandledDemo extends BaseRestDemoPage {
     
+    @RestInfo(consumes = "text/plain")
     Object onHttpPut()
     {
         return createResponse(EventConstants.HTTP_PUT, "no body", "no parameter");
