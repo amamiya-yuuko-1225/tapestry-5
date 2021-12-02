@@ -40,7 +40,7 @@ public interface OpenApiTypeDescriber
     
     /**
      * Describes a REST event handler method return type.
-     * @param descriptiona {@link JSONObject} containing the description of a path.
+     * @param descriptiona {@link JSONObject} containing the description of a path response.
      * @param parameter the event handler method itself.
      */
     void describeReturnType(final JSONObject description, Method method);

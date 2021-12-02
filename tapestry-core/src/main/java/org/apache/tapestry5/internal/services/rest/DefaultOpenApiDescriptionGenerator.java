@@ -640,6 +640,7 @@ public class DefaultOpenApiDescriptionGenerator implements OpenApiDescriptionGen
         else
         {
             path = path.substring(basePath.length() - 1); // keep the slash
+            path = path.replace("//", "/"); // remove possible double slashes
         }
         return path;
     }
