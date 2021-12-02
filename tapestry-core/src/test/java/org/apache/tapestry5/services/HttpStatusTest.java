@@ -64,7 +64,35 @@ public class HttpStatusTest
         HttpStatus status = HttpStatus.accepted();
         assertEquals(status.getStatusCode(), HttpServletResponse.SC_ACCEPTED);
     }
+
+    @Test
+    public void notFound()
+    {
+        HttpStatus status = HttpStatus.notFound();
+        assertEquals(status.getStatusCode(), HttpServletResponse.SC_NOT_FOUND);
+    }
+
+    @Test
+    public void forbidden()
+    {
+        HttpStatus status = HttpStatus.forbidden();
+        assertEquals(status.getStatusCode(), HttpServletResponse.SC_FORBIDDEN);
+    }
     
+    @Test
+    public void unauthorized()
+    {
+        HttpStatus status = HttpStatus.unauthorized();
+        assertEquals(status.getStatusCode(), HttpServletResponse.SC_UNAUTHORIZED);
+    }
+
+    @Test
+    public void badRequest()
+    {
+        HttpStatus status = HttpStatus.badRequest();
+        assertEquals(status.getStatusCode(), HttpServletResponse.SC_BAD_REQUEST);
+    }
+
     @Test
     public void seeOtherWithString()
     {

@@ -80,6 +80,38 @@ public final class HttpStatus
     }
     
     /**
+     * Creates an instance with status code <code>404 Not Found</code>.
+     */
+    public static HttpStatus notFound()
+    {
+        return new HttpStatus(HttpServletResponse.SC_NOT_FOUND);
+    }
+    
+    /**
+     * Creates an instance with status code <code>403 Forbidden</code>.
+     */
+    public static HttpStatus forbidden()
+    {
+        return new HttpStatus(HttpServletResponse.SC_FORBIDDEN);
+    }
+    
+    /**
+     * Creates an instance with status code <code>400 Bad Request</code>.
+     */
+    public static HttpStatus badRequest()
+    {
+        return new HttpStatus(HttpServletResponse.SC_BAD_REQUEST);
+    }
+    
+    /**
+     * Creates an instance with status code <code>401 Unauthorized</code>.
+     */
+    public static HttpStatus unauthorized()
+    {
+        return new HttpStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    }
+    
+    /**
      * Creates an instance with status code <code>303 See Other</code>.
      * @param location the value of the <code>Location</code> header.
      */
@@ -181,6 +213,14 @@ public final class HttpStatus
     public HttpStatus withContentLocation(String location)
     {
         return withHttpHeader(CONTENT_LOCATION_HTTP_HEADER, location);
+    }
+    
+    /**
+     * Sets the <code>Content-Location</code> HTTP header.
+     */
+    public HttpStatus withContentLocation(Link link)
+    {
+        return withHttpHeader(CONTENT_LOCATION_HTTP_HEADER, link.toRedirectURI());
     }
     
     /**
