@@ -27,9 +27,9 @@ import org.apache.tapestry5.services.rest.OpenApiTypeDescriber;
 import com.github.victools.jsonschema.generator.SchemaGenerator;
 
 /**
- * {@link OpenApiTypeDescriber} implementation using Java JSONSchema Generator,
+ * {@link OpenApiTypeDescriber} implementation using 
+ * <a href="https://victools.github.io/jsonschema-generator/#introduction">Java JSONSchema Generator</a>,
  * by default generating JSON Schema 2019-09.
- * @see https://github.com/victools/jsonschema-generator/tree/master/jsonschema-generator.
  */
 public class JacksonOpenApiTypeDescriber implements OpenApiTypeDescriber 
 {

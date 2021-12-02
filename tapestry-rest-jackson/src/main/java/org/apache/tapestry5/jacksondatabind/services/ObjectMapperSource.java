@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Calls to {@link #get(Class)} will call the same method in contributed instances until
  * one returns a non-null {@link ObjectMapper} instance.
  * </p>
- * @see 
+ * @see ObjectMapper
  * @see MappedEntityManager
  * @since 5.8.0
  */
