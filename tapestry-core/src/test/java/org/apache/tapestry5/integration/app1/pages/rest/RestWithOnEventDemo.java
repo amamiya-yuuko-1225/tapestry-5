@@ -40,7 +40,7 @@ public class RestWithOnEventDemo extends BaseRestDemoPage {
     }
 
     @OnEvent(EventConstants.HTTP_PATCH)
-    @RestInfo(consumes = "application/javascript")
+    @RestInfo(consumes = "application/json")
     Object patch(
             @StaticActivationContextValue(SUBPATH) String subpath, 
             String parameter, 
@@ -50,7 +50,7 @@ public class RestWithOnEventDemo extends BaseRestDemoPage {
     }
 
     @OnEvent(EventConstants.HTTP_POST)
-    @RestInfo(consumes = "application/javascript")
+    @RestInfo(consumes = "application/json")
     Object post(
             @StaticActivationContextValue(SUBPATH) String subpath, 
             String parameter, 
@@ -60,7 +60,7 @@ public class RestWithOnEventDemo extends BaseRestDemoPage {
     }
 
     @OnEvent(EventConstants.HTTP_PUT)
-    @RestInfo(consumes = "application/javascript")
+    @RestInfo(consumes = "application/json")
     Object put(
             @StaticActivationContextValue(SUBPATH) String subpath, 
             String parameter, 

@@ -23,19 +23,19 @@ import org.apache.tapestry5.json.JSONObject;
 /**
  * REST endpoint class just to test the parameter and return type descriptions.
  */
-@RestInfo(produces = "application/javascript")
+@RestInfo(produces = "application/json")
 public class RestTypeDescriptionsDemo {
 
     private static final String TEXT_PLAIN = "text/plain";
 
     @OnEvent(EventConstants.HTTP_GET)
-    @RestInfo(consumes = "application/javascript", produces = "application/javascript")
+    @RestInfo(consumes = "application/json", produces = "application/json")
     Object point(@StaticActivationContextValue("point") String ignored, Point p1, @RequestBody Point p2) {
         return null;
     }
     
     @OnEvent(EventConstants.HTTP_GET)
-    @RestInfo(returnType = JSONArray.class, consumes = "application/javascript", produces = "application/javascript")    
+    @RestInfo(returnType = JSONArray.class, consumes = "application/json", produces = "application/json")    
     Object jsonArray(
             @StaticActivationContextValue("jsonArray") String ignored, 
             JSONArray jsonArray1,
@@ -44,7 +44,7 @@ public class RestTypeDescriptionsDemo {
     }
     
     @OnEvent(EventConstants.HTTP_GET)
-    @RestInfo(returnType = JSONObject.class, consumes = "application/javascript", produces = "application/javascript")    
+    @RestInfo(returnType = JSONObject.class, consumes = "application/json", produces = "application/json")    
     Object jsonObject(@StaticActivationContextValue("jsonObject") String ignored, JSONObject jsonObject, @RequestBody JSONObject jsonObject2) {
         return null;
     }
