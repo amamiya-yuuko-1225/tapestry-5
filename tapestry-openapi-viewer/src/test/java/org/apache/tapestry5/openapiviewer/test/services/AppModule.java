@@ -34,7 +34,8 @@ public class AppModule
     @Contribute(MappedEntityManager.class)
     public static void provideMappedEntities(Configuration<String> configuration)
     {
-        org.apache.tapestry5.integration.app1.services.AppModule.provideMappedEntities(configuration);
+//        org.apache.tapestry5.integration.app1.services.AppModule.provideMappedEntities(configuration);
+        configuration.add("org.apache.tapestry5.integration.app1.data.rest.entities");
     }
     
 }
