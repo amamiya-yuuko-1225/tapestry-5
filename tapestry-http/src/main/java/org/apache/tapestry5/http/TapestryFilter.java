@@ -210,8 +210,15 @@ public class TapestryFilter implements Filter
             {
                 asyncContext.addListener(handlerResponse.getListener());
             }
+            if (handlerResponse.getTimeout() > 0)
+            {
+                asyncContext.setTimeout(handlerResponse.getTimeout());
+            }
             handlerResponse.getExecutor().execute(
-                    new ExceptionCatchingRunnable(() -> runFilter(request, response, chain)));
+                    new ExceptionCatchingRunnable(() -> {
+                        runFilter(request, response, chain);
+                        asyncContext.complete();
+                    }));
         }
         else
         {

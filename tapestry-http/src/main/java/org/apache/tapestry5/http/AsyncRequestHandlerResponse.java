@@ -39,6 +39,8 @@ public class AsyncRequestHandlerResponse
     
     private AsyncListener listener;
     
+    private long timeout;
+    
     /**
      * Creates an instance with a given {@link Executor}. It cannot be null.
      * If you want an instance with a non-async response, use {@link #notHandled()} instead.
@@ -82,6 +84,15 @@ public class AsyncRequestHandlerResponse
     {
         Objects.requireNonNull(listener, "Parameter listener cannot be null");
         this.listener = listener;
+        return this;
+    }
+    
+    /**
+     * Sets the timeout for this asynchronous request in milliseconds.
+     */
+    public AsyncRequestHandlerResponse withTimeout(long timeout)
+    {
+        this.timeout = timeout;
         return this;
     }
     
@@ -140,6 +151,21 @@ public class AsyncRequestHandlerResponse
     public boolean isHasRequestAndResponse()
     {
         return request != null && response != null;
+    }
+
+    /**
+     * Returns the timeout, in milliseconds, for the asynchronous request. Any value
+     * less than or equal zero is considered not having set a timeout.
+     */
+    public long getTimeout() {
+        return timeout;
+    }
+
+    @Override
+    public String toString() 
+    {
+        return "AsyncRequestHandlerResponse [async=" + async + ", executor=" + executor + ", request=" + request + ", response=" + response + ", listener="
+                + listener + "]";
     }
     
 }
