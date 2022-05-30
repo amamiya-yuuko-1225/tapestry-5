@@ -32,7 +32,7 @@ public interface PeriodicExecutor
     PeriodicJob addJob(Schedule schedule, String name, Runnable job);
     
     /**
-     * Initializes this service. <em>Never call this method direclty. It's intended
+     * Initializes this service. <em>Never call this method directly. It's intended
      * for internal Tapestry-IoC usage only</em>.
      */
     public void init();
