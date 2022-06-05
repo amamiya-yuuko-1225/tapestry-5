@@ -125,7 +125,17 @@ public class MethodDescription implements Comparable<MethodDescription>
     public MethodDescription(Method method)
     {
         this(method.getModifiers(), PlasticUtils.toTypeName(method.getReturnType()), method.getName(), PlasticUtils
-                .toTypeNames(method.getParameterTypes()), null, PlasticUtils.toTypeNames(method.getExceptionTypes()));
+                .toTypeNames(method.getParameterTypes()), null, PlasticUtils.toTypeNames(Collections.sort(new ArrayList(Arrays.asList(method.getExceptionTypes())), new Comparator() {
+
+                    @Override
+                    
+                    public int compare(Object o1, Object o2) {
+                    
+                    return o1.toString().compareTo(o2.toString());
+                    
+                    }
+                    
+                    })));
     }
 
     @Override
